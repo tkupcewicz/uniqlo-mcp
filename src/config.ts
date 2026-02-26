@@ -174,6 +174,119 @@ export const REGIONS: Record<string, RegionConfig> = {
       baby: "37611",
     },
   },
+  // EU-expansion stores (eu-XX pattern, all English + EUR)
+  pl: {
+    country: "eu-pl",
+    apiVersion: "v5",
+    lang: "en",
+    currency: "EUR",
+    clientId: "uq.pl.web-spa",
+    baseUrl: "https://www.uniqlo.com/eu-pl/api/commerce/v5/en/products",
+    categories: {
+      women: "37608",
+      men: "37609",
+      kids: "37610",
+      baby: "37611",
+    },
+  },
+  at: {
+    country: "eu-at",
+    apiVersion: "v5",
+    lang: "en",
+    currency: "EUR",
+    clientId: "uq.at.web-spa",
+    baseUrl: "https://www.uniqlo.com/eu-at/api/commerce/v5/en/products",
+    categories: {
+      women: "37608",
+      men: "37609",
+      kids: "37610",
+      baby: "37611",
+    },
+  },
+  pt: {
+    country: "eu-pt",
+    apiVersion: "v5",
+    lang: "en",
+    currency: "EUR",
+    clientId: "uq.pt.web-spa",
+    baseUrl: "https://www.uniqlo.com/eu-pt/api/commerce/v5/en/products",
+    categories: {
+      women: "37608",
+      men: "37609",
+      kids: "37610",
+      baby: "37611",
+    },
+  },
+  ie: {
+    country: "eu-ie",
+    apiVersion: "v5",
+    lang: "en",
+    currency: "EUR",
+    clientId: "uq.ie.web-spa",
+    baseUrl: "https://www.uniqlo.com/eu-ie/api/commerce/v5/en/products",
+    categories: {
+      women: "37608",
+      men: "37609",
+      kids: "37610",
+      baby: "37611",
+    },
+  },
+  cz: {
+    country: "eu-cz",
+    apiVersion: "v5",
+    lang: "en",
+    currency: "EUR",
+    clientId: "uq.cz.web-spa",
+    baseUrl: "https://www.uniqlo.com/eu-cz/api/commerce/v5/en/products",
+    categories: {
+      women: "37608",
+      men: "37609",
+      kids: "37610",
+      baby: "37611",
+    },
+  },
+  hu: {
+    country: "eu-hu",
+    apiVersion: "v5",
+    lang: "en",
+    currency: "EUR",
+    clientId: "uq.hu.web-spa",
+    baseUrl: "https://www.uniqlo.com/eu-hu/api/commerce/v5/en/products",
+    categories: {
+      women: "37608",
+      men: "37609",
+      kids: "37610",
+      baby: "37611",
+    },
+  },
+  ro: {
+    country: "eu-ro",
+    apiVersion: "v5",
+    lang: "en",
+    currency: "EUR",
+    clientId: "uq.ro.web-spa",
+    baseUrl: "https://www.uniqlo.com/eu-ro/api/commerce/v5/en/products",
+    categories: {
+      women: "37608",
+      men: "37609",
+      kids: "37610",
+      baby: "37611",
+    },
+  },
+  fi: {
+    country: "eu-fi",
+    apiVersion: "v5",
+    lang: "en",
+    currency: "EUR",
+    clientId: "uq.fi.web-spa",
+    baseUrl: "https://www.uniqlo.com/eu-fi/api/commerce/v5/en/products",
+    categories: {
+      women: "37608",
+      men: "37609",
+      kids: "37610",
+      baby: "37611",
+    },
+  },
 };
 
 // In-memory defaults, changeable via set_default_region / set_currency tools.
@@ -222,10 +335,9 @@ export function getSupportedCurrencies(): string[] {
 }
 
 // European country codes that don't have their own Uniqlo store.
-// These fall back to the EU (English) store.
+// These fall back to the EU (NL) store.
 const EU_FALLBACK_COUNTRIES = new Set([
-  "pl", "at", "ch", "pt", "ie", "fi", "no", "cz", "hu", "ro",
-  "bg", "hr", "sk", "si", "lt", "lv", "ee", "lu", "gr", "cy", "mt",
+  "ch", "no", "bg", "hr", "sk", "si", "lt", "lv", "ee", "lu", "gr", "cy", "mt",
 ]);
 
 export interface RegionResult {

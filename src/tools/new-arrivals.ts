@@ -13,7 +13,7 @@ export function registerNewArrivals(server: McpServer): void {
     {
       category: z.enum(['women', 'men', 'kids', 'baby']).optional().describe('Filter by category'),
       limit: z.number().min(1).max(100).default(20).describe('Number of results to return'),
-      region: z.string().optional().describe('Region: us, jp, sg, uk, de, fr, it, es, nl, be, se, dk, or eu. Use country code (e.g., "pl" for Poland) — unsupported countries auto-redirect to EU store (default: us or UNIQLO_REGION env)'),
+      region: z.string().optional().describe('Country code: us, jp, sg, uk, de, fr, it, es, nl, be, se, dk, pl, at, pt, ie, cz, hu, ro, fi, or eu (default: us or UNIQLO_REGION env)'),
     },
     async (params) => {
       try {
