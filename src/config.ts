@@ -176,6 +176,17 @@ export const REGIONS: Record<string, RegionConfig> = {
   },
 };
 
+// In-memory default region, changeable via set_default_region tool.
+let defaultRegion: string | undefined;
+
+export function setDefaultRegion(region: string): void {
+  defaultRegion = region;
+}
+
+export function getDefaultRegion(): string | undefined {
+  return defaultRegion;
+}
+
 // European country codes that don't have their own Uniqlo store.
 // These fall back to the EU (English) store.
 const EU_FALLBACK_COUNTRIES = new Set([
@@ -189,7 +200,7 @@ export interface RegionResult {
 }
 
 export function getRegionConfig(region?: string): RegionResult {
-  const key = (region ?? process.env.UNIQLO_REGION ?? "us").toLowerCase();
+  const key = (region ?? defaultRegion ?? process.env.UNIQLO_REGION ?? "us").toLowerCase();
 
   // Direct match
   const config = REGIONS[key];
