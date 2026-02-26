@@ -176,13 +176,44 @@ export const REGIONS: Record<string, RegionConfig> = {
   },
 };
 
-export function getRegionConfig(region?: string): RegionConfig {
-  const key = region ?? process.env.UNIQLO_REGION ?? "us";
-  const config = REGIONS[key.toLowerCase()];
-  if (!config) {
-    throw new Error(
-      `Invalid region "${key}". Supported regions: ${Object.keys(REGIONS).join(", ")}`
-    );
+// European country codes that don't have their own Uniqlo store.
+// These fall back to the EU (English) store.
+const EU_FALLBACK_COUNTRIES = new Set([
+  "pl", "at", "ch", "pt", "ie", "fi", "no", "cz", "hu", "ro",
+  "bg", "hr", "sk", "si", "lt", "lv", "ee", "lu", "gr", "cy", "mt",
+]);
+
+export interface RegionResult {
+  config: RegionConfig;
+  fallbackNotice?: string;
+}
+
+export function getRegionConfig(region?: string): RegionResult {
+  const key = (region ?? process.env.UNIQLO_REGION ?? "us").toLowerCase();
+
+  // Direct match
+  const config = REGIONS[key];
+  if (config) {
+    return { config };
   }
-  return config;
+
+  // "eu" alias → UK store (English, ships across Europe)
+  if (key === "eu") {
+    return {
+      config: REGIONS.uk,
+      fallbackNotice: "Using the Uniqlo EU store (uniqlo.com/uk) — English language, ships across Europe. Prices in GBP.",
+    };
+  }
+
+  // European country without its own store → fall back to EU
+  if (EU_FALLBACK_COUNTRIES.has(key)) {
+    return {
+      config: REGIONS.uk,
+      fallbackNotice: `Uniqlo does not have a dedicated store for "${key.toUpperCase()}". Using the EU store (uniqlo.com/uk) instead — English language, ships across Europe. Prices in GBP. Available EU stores: ${Object.keys(REGIONS).filter(r => !["us", "jp", "sg"].includes(r)).join(", ").toUpperCase()}.`,
+    };
+  }
+
+  throw new Error(
+    `Invalid region "${key}". Supported regions: ${Object.keys(REGIONS).join(", ")}, eu (European fallback)`
+  );
 }

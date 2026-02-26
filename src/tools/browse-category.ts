@@ -15,11 +15,11 @@ export function registerBrowseCategory(server: McpServer): void {
       limit: z.number().min(1).max(100).default(20).describe('Number of results to return'),
       offset: z.number().min(0).default(0).describe('Offset for pagination'),
       sort: z.enum(['relevance', 'price_low', 'price_high', 'new']).optional().describe('Sort order'),
-      region: z.string().optional().describe('Region: us, jp, sg, uk, de, fr, it, es, nl, be, se, or dk (default: us or UNIQLO_REGION env)'),
+      region: z.string().optional().describe('Region: us, jp, sg, uk, de, fr, it, es, nl, be, se, dk, or eu. Use country code (e.g., "pl" for Poland) — unsupported countries auto-redirect to EU store (default: us or UNIQLO_REGION env)'),
     },
     async (params) => {
       try {
-        const config = getRegionConfig(params.region);
+        const { config, fallbackNotice } = getRegionConfig(params.region);
         const client = new UniqloClient(config);
         const service = new ProductService(client, config);
 
@@ -29,7 +29,8 @@ export function registerBrowseCategory(server: McpServer): void {
           sort: params.sort as SortOption,
         });
 
-        return { content: [{ type: 'text' as const, text: formatSearchResults(result) }] };
+        const text = (fallbackNotice ? `> ${fallbackNotice}\n\n` : '') + formatSearchResults(result);
+        return { content: [{ type: 'text' as const, text }] };
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         return { content: [{ type: 'text' as const, text: formatError(message) }], isError: true };

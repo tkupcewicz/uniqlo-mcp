@@ -11,17 +11,18 @@ export function registerGetProduct(server: McpServer): void {
     'Get detailed information about a specific Uniqlo product',
     {
       product_id: z.string().describe('Uniqlo product ID (e.g., "E470988-000")'),
-      region: z.string().optional().describe('Region: us, jp, sg, uk, de, fr, it, es, nl, be, se, or dk (default: us or UNIQLO_REGION env)'),
+      region: z.string().optional().describe('Region: us, jp, sg, uk, de, fr, it, es, nl, be, se, dk, or eu. Use country code (e.g., "pl" for Poland) — unsupported countries auto-redirect to EU store (default: us or UNIQLO_REGION env)'),
     },
     async (params) => {
       try {
-        const config = getRegionConfig(params.region);
+        const { config, fallbackNotice } = getRegionConfig(params.region);
         const client = new UniqloClient(config);
         const service = new ProductService(client, config);
 
         const detail = await service.getProductDetail(params.product_id);
 
-        return { content: [{ type: 'text' as const, text: formatProductDetail(detail) }] };
+        const text = (fallbackNotice ? `> ${fallbackNotice}\n\n` : '') + formatProductDetail(detail);
+        return { content: [{ type: 'text' as const, text }] };
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         return { content: [{ type: 'text' as const, text: formatError(message) }], isError: true };
