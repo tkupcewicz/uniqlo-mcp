@@ -176,8 +176,9 @@ export const REGIONS: Record<string, RegionConfig> = {
   },
 };
 
-// In-memory default region, changeable via set_default_region tool.
+// In-memory defaults, changeable via set_default_region / set_currency tools.
 let defaultRegion: string | undefined;
+let currencyOverride: string | undefined;
 // Track whether the user already saw the fallback notice via set_default_region.
 let fallbackAcknowledged = false;
 
@@ -188,6 +189,36 @@ export function setDefaultRegion(region: string): void {
 
 export function getDefaultRegion(): string | undefined {
   return defaultRegion;
+}
+
+// Maps currency codes to the best store for that currency (preferring English).
+const CURRENCY_TO_REGION: Record<string, string> = {
+  usd: "us",
+  gbp: "uk",
+  eur: "nl",   // English + EUR
+  jpy: "jp",
+  sgd: "sg",
+  sek: "se",
+  dkk: "dk",
+};
+
+export function setCurrencyOverride(currency: string): { region: string; currency: string } | null {
+  const key = currency.toLowerCase();
+  const regionKey = CURRENCY_TO_REGION[key];
+  if (!regionKey) return null;
+  currencyOverride = key;
+  defaultRegion = regionKey;
+  fallbackAcknowledged = true;
+  const config = REGIONS[regionKey];
+  return { region: regionKey, currency: config.currency };
+}
+
+export function getCurrencyOverride(): string | undefined {
+  return currencyOverride;
+}
+
+export function getSupportedCurrencies(): string[] {
+  return Object.keys(CURRENCY_TO_REGION).map(c => c.toUpperCase());
 }
 
 // European country codes that don't have their own Uniqlo store.
@@ -215,19 +246,19 @@ export function getRegionConfig(region?: string): RegionResult {
   // If using the saved default and user already saw the notice, skip it.
   const suppressNotice = usingDefault && fallbackAcknowledged;
 
-  // "eu" alias → UK store (English, ships across Europe)
+  // "eu" alias → NL store (English + EUR)
   if (key === "eu") {
     return {
-      config: REGIONS.uk,
-      fallbackNotice: suppressNotice ? undefined : "Using the Uniqlo EU store (uniqlo.com/uk) — English language, ships across Europe. Prices in GBP.",
+      config: REGIONS.nl,
+      fallbackNotice: suppressNotice ? undefined : "Using the Uniqlo EU store (uniqlo.com/nl) — English, EUR. Ships across Europe.",
     };
   }
 
-  // European country without its own store → fall back to EU
+  // European country without its own store → fall back to NL (English + EUR)
   if (EU_FALLBACK_COUNTRIES.has(key)) {
     return {
-      config: REGIONS.uk,
-      fallbackNotice: suppressNotice ? undefined : `Uniqlo does not have a dedicated store for "${key.toUpperCase()}". Using the EU store (uniqlo.com/uk) instead — English language, ships across Europe. Prices in GBP. Available EU stores: ${Object.keys(REGIONS).filter(r => !["us", "jp", "sg"].includes(r)).join(", ").toUpperCase()}.`,
+      config: REGIONS.nl,
+      fallbackNotice: suppressNotice ? undefined : `No Uniqlo store for "${key.toUpperCase()}". Using EU store (uniqlo.com/nl) — English, EUR. Available stores: ${Object.keys(REGIONS).filter(r => !["us", "jp", "sg"].includes(r)).join(", ").toUpperCase()}.`,
     };
   }
 

@@ -4,6 +4,7 @@ import { registerGetProduct } from './tools/get-product.js';
 import { registerBrowseCategory } from './tools/browse-category.js';
 import { registerNewArrivals } from './tools/new-arrivals.js';
 import { registerSetDefaultRegion } from './tools/set-default-region.js';
+import { registerSetCurrency } from './tools/set-currency.js';
 
 export function createServer(): McpServer {
   const server = new McpServer({
@@ -12,6 +13,7 @@ export function createServer(): McpServer {
   });
 
   registerSetDefaultRegion(server);
+  registerSetCurrency(server);
   registerSearchProducts(server);
   registerGetProduct(server);
   registerBrowseCategory(server);
