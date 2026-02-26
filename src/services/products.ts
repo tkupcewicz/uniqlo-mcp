@@ -47,6 +47,9 @@ export class ProductService {
       total: response.result?.pagination?.total ?? 0,
       offset: response.result?.pagination?.offset ?? 0,
       limit: response.result?.pagination?.limit ?? 20,
+      query,
+      sort: options?.sort,
+      region: this.config.country,
     };
   }
 
@@ -81,6 +84,9 @@ export class ProductService {
       total: response.result?.pagination?.total ?? 0,
       offset: response.result?.pagination?.offset ?? 0,
       limit: response.result?.pagination?.limit ?? 20,
+      query: category,
+      sort: options?.sort,
+      region: this.config.country,
     };
   }
 
@@ -104,6 +110,8 @@ export class ProductService {
       total: response.result?.pagination?.total ?? 0,
       offset: response.result?.pagination?.offset ?? 0,
       limit: response.result?.pagination?.limit ?? 20,
+      query: category ? `new: ${category}` : 'new arrivals',
+      region: this.config.country,
     };
   }
 

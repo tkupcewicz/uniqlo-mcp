@@ -6,7 +6,12 @@ export function formatSearchResults(result: SearchResult): string {
   }
 
   const lines: string[] = [];
-  lines.push(`**Found ${result.total} products** (showing ${result.offset + 1}-${result.offset + result.products.length})\n`);
+  const meta: string[] = [`${result.total} results`];
+  if (result.query) meta.push(`"${result.query}"`);
+  if (result.region) meta.push(result.region.toUpperCase());
+  if (result.sort && result.sort !== 'relevance') meta.push(`sort: ${result.sort}`);
+  meta.push(`${result.offset + 1}-${result.offset + result.products.length}`);
+  lines.push(`**${meta.join(' · ')}**\n`);
 
   for (const product of result.products) {
     lines.push(formatProductSummary(product));
@@ -20,42 +25,31 @@ export function formatSearchResults(result: SearchResult): string {
 }
 
 function formatProductSummary(product: ProductSummary): string {
-  const lines: string[] = [];
-  lines.push(`### ${product.name}`);
+  const parts: string[] = [];
 
-  // Price line
+  // Price
   if (product.originalPrice) {
-    lines.push(`**Price**: ~~${product.currency} ${product.originalPrice}~~ ${product.currency} ${product.price}`);
+    parts.push(`~~${product.originalPrice}~~ **${product.price}** ${product.currency}`);
   } else {
-    lines.push(`**Price**: ${product.currency} ${product.price}`);
+    parts.push(`**${product.price}** ${product.currency}`);
   }
 
-  // Colors
+  // Rating
+  if (product.rating !== undefined && product.reviewCount) {
+    parts.push(`${product.rating.toFixed(1)}/5 (${product.reviewCount})`);
+  }
+
+  // Colors count
   if (product.colors.length > 0) {
-    const colorNames = product.colors.map(c => c.name).join(', ');
-    lines.push(`**Colors**: ${colorNames}`);
+    parts.push(`${product.colors.length} color${product.colors.length > 1 ? 's' : ''}`);
   }
 
   // Sizes
   if (product.sizes.length > 0) {
-    const sizeNames = product.sizes.map(s => s.name).join(', ');
-    lines.push(`**Sizes**: ${sizeNames}`);
+    parts.push(product.sizes.map(s => s.name).join(', '));
   }
 
-  // Rating
-  if (product.rating !== undefined) {
-    lines.push(`**Rating**: ${product.rating.toFixed(1)}/5 (${product.reviewCount ?? 0} reviews)`);
-  }
-
-  // Tags
-  if (product.tags.length > 0) {
-    lines.push(`**Tags**: ${product.tags.join(', ')}`);
-  }
-
-  lines.push(`**ID**: ${product.id}`);
-  lines.push(''); // blank line between products
-
-  return lines.join('\n');
+  return `- **${product.name}** — ${parts.join(' · ')} \`${product.id}\``;
 }
 
 export function formatProductDetail(detail: ProductDetail): string {

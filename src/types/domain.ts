@@ -39,4 +39,7 @@ export interface SearchResult {
   total: number;
   offset: number;
   limit: number;
+  query?: string;
+  sort?: string;
+  region?: string;
 }

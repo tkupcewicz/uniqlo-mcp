@@ -178,9 +178,12 @@ export const REGIONS: Record<string, RegionConfig> = {
 
 // In-memory default region, changeable via set_default_region tool.
 let defaultRegion: string | undefined;
+// Track whether the user already saw the fallback notice via set_default_region.
+let fallbackAcknowledged = false;
 
 export function setDefaultRegion(region: string): void {
   defaultRegion = region;
+  fallbackAcknowledged = true;
 }
 
 export function getDefaultRegion(): string | undefined {
@@ -200,6 +203,7 @@ export interface RegionResult {
 }
 
 export function getRegionConfig(region?: string): RegionResult {
+  const usingDefault = !region;
   const key = (region ?? defaultRegion ?? process.env.UNIQLO_REGION ?? "us").toLowerCase();
 
   // Direct match
@@ -208,11 +212,14 @@ export function getRegionConfig(region?: string): RegionResult {
     return { config };
   }
 
+  // If using the saved default and user already saw the notice, skip it.
+  const suppressNotice = usingDefault && fallbackAcknowledged;
+
   // "eu" alias → UK store (English, ships across Europe)
   if (key === "eu") {
     return {
       config: REGIONS.uk,
-      fallbackNotice: "Using the Uniqlo EU store (uniqlo.com/uk) — English language, ships across Europe. Prices in GBP.",
+      fallbackNotice: suppressNotice ? undefined : "Using the Uniqlo EU store (uniqlo.com/uk) — English language, ships across Europe. Prices in GBP.",
     };
   }
 
@@ -220,7 +227,7 @@ export function getRegionConfig(region?: string): RegionResult {
   if (EU_FALLBACK_COUNTRIES.has(key)) {
     return {
       config: REGIONS.uk,
-      fallbackNotice: `Uniqlo does not have a dedicated store for "${key.toUpperCase()}". Using the EU store (uniqlo.com/uk) instead — English language, ships across Europe. Prices in GBP. Available EU stores: ${Object.keys(REGIONS).filter(r => !["us", "jp", "sg"].includes(r)).join(", ").toUpperCase()}.`,
+      fallbackNotice: suppressNotice ? undefined : `Uniqlo does not have a dedicated store for "${key.toUpperCase()}". Using the EU store (uniqlo.com/uk) instead — English language, ships across Europe. Prices in GBP. Available EU stores: ${Object.keys(REGIONS).filter(r => !["us", "jp", "sg"].includes(r)).join(", ").toUpperCase()}.`,
     };
   }
 
