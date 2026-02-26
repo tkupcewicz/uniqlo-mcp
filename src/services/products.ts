@@ -52,7 +52,7 @@ export class ProductService {
 
   async getProductDetail(productId: string): Promise<ProductDetail> {
     const response = await this.client.getProductDetail(productId);
-    const item = response.result?.items?.[0];
+    const item = response.result;
     if (!item) {
       throw new Error(`Product not found: ${productId}`);
     }
@@ -110,20 +110,21 @@ export class ProductService {
   private mapToSummary(raw: UniqloProduct): ProductSummary {
     const mainImage = raw.images?.main;
     const firstImageKey = mainImage ? Object.keys(mainImage)[0] : undefined;
-    const thumbnail = firstImageKey ? mainImage[firstImageKey]?.url : undefined;
+    const thumbnail = firstImageKey ? mainImage[firstImageKey]?.image : undefined;
 
     return {
       id: raw.productId,
       name: raw.name,
       price: raw.prices?.promo?.value ?? raw.prices?.base?.value ?? 0,
-      originalPrice: raw.prices?.promo ? raw.prices.base.value : undefined,
-      currency: raw.prices?.base?.currency?.currencyCode ?? this.config.currency,
+      originalPrice: (raw.prices?.promo?.value && raw.prices.promo.value !== raw.prices.base.value)
+        ? raw.prices.base.value : undefined,
+      currency: raw.prices?.base?.currency?.code ?? this.config.currency,
       colors: (raw.colors ?? []).map(c => ({ code: c.code, name: c.name })),
       sizes: (raw.sizes ?? []).map(s => ({ code: s.code, name: s.name })),
       rating: raw.rating?.average,
       reviewCount: raw.rating?.count,
       thumbnail,
-      tags: raw.flagList ?? [],
+      tags: [],
     };
   }
 
@@ -134,7 +135,7 @@ export class ProductService {
     const images: string[] = [];
     if (raw.images?.main) {
       for (const key of Object.keys(raw.images.main)) {
-        const url = raw.images.main[key]?.url;
+        const url = raw.images.main[key]?.image;
         if (url) images.push(url);
       }
     }
@@ -145,17 +146,20 @@ export class ProductService {
       name: l2.size.name,
       colorCode: l2.color.code,
       colorName: l2.color.name,
-      inStock: l2.stock?.statusCode === 'IN_STOCK',
+      inStock: l2.sales,
     }));
 
     const productUrl = `https://www.uniqlo.com/${this.config.country}/en/products/${productId}`;
+
+    // Extract origin from countriesOfOrigin array
+    const origin = raw.countriesOfOrigin?.map(c => c.code).join(', ');
 
     return {
       ...summary,
       description: raw.longDescription,
       composition: raw.composition,
-      careInstructions: raw.washingDescription,
-      origin: raw.originCountry,
+      careInstructions: raw.washingInformation,
+      origin,
       availableSizes,
       images,
       url: productUrl,

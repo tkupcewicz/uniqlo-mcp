@@ -18,17 +18,16 @@ export interface UniqloProduct {
   prices: {
     base: {
       value: number;
-      currency: { currencyCode: string };
+      currency: { code: string };
     };
     promo?: {
       value: number;
-    };
+    } | null;
   };
   colors: Array<{
     code: string;
     name: string;
     displayCode: string;
-    chipUrl?: string;
   }>;
   sizes: Array<{
     code: string;
@@ -40,19 +39,14 @@ export interface UniqloProduct {
     count: number;
   };
   images: {
-    main: Record<string, { url: string }>;
-  };
-  flagList?: string[];
-  representativeSKU?: {
-    salePrice?: number;
+    main: Record<string, { image: string }>;
   };
 }
 
 // Response from the product detail endpoint
+// Note: result IS the product directly, not wrapped in items[]
 export interface UniqloProductDetailResponse {
-  result: {
-    items: UniqloProductDetail[];
-  };
+  result: UniqloProductDetail;
   status: string;
 }
 
@@ -60,12 +54,12 @@ export interface UniqloProductDetailResponse {
 export interface UniqloProductDetail extends UniqloProduct {
   longDescription?: string;
   composition?: string;
-  washingDescription?: string;
+  washingInformation?: string;
   sizeChartUrl?: string;
-  originCountry?: string;
+  countriesOfOrigin?: Array<{ lid: string; code: string }>;
   l2s?: Array<{
     color: { code: string; name: string };
     size: { code: string; name: string };
-    stock?: { statusCode: string }; // "IN_STOCK", "OUT_OF_STOCK"
+    sales: boolean;
   }>;
 }
