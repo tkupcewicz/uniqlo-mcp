@@ -11,7 +11,7 @@ export function registerGetProduct(server: McpServer): void {
     'Get detailed information about a specific Uniqlo product',
     {
       product_id: z.string().describe('Uniqlo product ID (e.g., "E470988-000")'),
-      region: z.string().optional().describe('Region: us, jp, or sg (default: us or UNIQLO_REGION env)'),
+      region: z.string().optional().describe('Region: us, jp, sg, uk, de, fr, it, es, nl, be, se, or dk (default: us or UNIQLO_REGION env)'),
     },
     async (params) => {
       try {

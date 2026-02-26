@@ -15,7 +15,7 @@ export function registerBrowseCategory(server: McpServer): void {
       limit: z.number().min(1).max(100).default(20).describe('Number of results to return'),
       offset: z.number().min(0).default(0).describe('Offset for pagination'),
       sort: z.enum(['relevance', 'price_low', 'price_high', 'new']).optional().describe('Sort order'),
-      region: z.string().optional().describe('Region: us, jp, or sg (default: us or UNIQLO_REGION env)'),
+      region: z.string().optional().describe('Region: us, jp, sg, uk, de, fr, it, es, nl, be, se, or dk (default: us or UNIQLO_REGION env)'),
     },
     async (params) => {
       try {

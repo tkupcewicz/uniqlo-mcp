@@ -17,11 +17,14 @@ export class UniqloClient {
    */
   private async fetchWithRetry(url: string, maxRetries = 3): Promise<Response> {
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
-      const response = await fetch(url, {
-        headers: {
-          'User-Agent': USER_AGENT,
-        },
-      });
+      const headers: Record<string, string> = {
+        'User-Agent': USER_AGENT,
+      };
+      if (this.config.clientId) {
+        headers['x-fr-clientid'] = this.config.clientId;
+      }
+
+      const response = await fetch(url, { headers });
 
       if (response.ok) {
         return response;

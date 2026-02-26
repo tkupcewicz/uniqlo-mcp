@@ -149,7 +149,7 @@ export class ProductService {
       inStock: l2.sales,
     }));
 
-    const productUrl = `https://www.uniqlo.com/${this.config.country}/en/products/${productId}`;
+    const productUrl = `https://www.uniqlo.com/${this.config.country}/${this.config.lang}/products/${productId}`;
 
     // Extract origin from countriesOfOrigin array
     const origin = raw.countriesOfOrigin?.map(c => c.code).join(', ');

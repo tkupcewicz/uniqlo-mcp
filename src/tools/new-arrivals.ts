@@ -13,7 +13,7 @@ export function registerNewArrivals(server: McpServer): void {
     {
       category: z.enum(['women', 'men', 'kids', 'baby']).optional().describe('Filter by category'),
       limit: z.number().min(1).max(100).default(20).describe('Number of results to return'),
-      region: z.string().optional().describe('Region: us, jp, or sg (default: us or UNIQLO_REGION env)'),
+      region: z.string().optional().describe('Region: us, jp, sg, uk, de, fr, it, es, nl, be, se, or dk (default: us or UNIQLO_REGION env)'),
     },
     async (params) => {
       try {

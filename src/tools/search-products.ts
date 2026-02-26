@@ -19,7 +19,7 @@ export function registerSearchProducts(server: McpServer): void {
       price_min: z.number().optional().describe('Minimum price filter'),
       price_max: z.number().optional().describe('Maximum price filter'),
       sort: z.enum(['relevance', 'price_low', 'price_high', 'new']).optional().describe('Sort order'),
-      region: z.string().optional().describe('Region: us, jp, or sg (default: us or UNIQLO_REGION env)'),
+      region: z.string().optional().describe('Region: us, jp, sg, uk, de, fr, it, es, nl, be, se, or dk (default: us or UNIQLO_REGION env)'),
     },
     async (params) => {
       try {
